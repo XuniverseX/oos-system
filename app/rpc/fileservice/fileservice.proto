@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package fileservice;
+
+option go_package = "./pb";
+
+// 断点上传切片
+message UploadChunkReq {
+  bytes file = 1;
+  string hash = 2;
+  int64 index = 3;
+  int64 totalChunk = 4;
+  string tempPathPrefix = 5;
+  string filename = 6;
+}
+
+message UploadChunkResp {
+  repeated int64 indexes = 1;
+  bool success = 2;
+  bool needMerge = 3;
+}
+
+// 合并切片
+message MergeChunkReq {
+  string hash = 1;
+  int64 chunkSize = 2;
+//  string replicationId = 3; //merge 在多个文件夹
+  string filename = 3;
+  string tempPathPrefix = 4;
+  string oriFilename = 5;
+}
+message MergeChunkResp {
+  string filename = 1;
+}
+
+message CopyFileReq {
+  string originFilename = 1;
+  repeated string replicationPath = 2;
+}
+message CopyFileResp {
+  bool success = 1;
+}
+
+message putRequest {
+  bytes files = 1;
+  string hash = 2;
+  repeated string replicationId = 3;
+}
+
+message putResponse {
+  bool success = 1;
+}
+
+message getRequest {
+  int32  index = 1;
+  string name = 2;
+  string hash = 3;
+}
+
+message getResponse{
+  bytes data = 1;
+}
+
+//预览
+message PreviewReq{
+  string  hash = 1;
+}
+
+message PreviewResp{
+  bytes data = 1;
+}
+
+// 验证文件是否已上传
+message VerifyReq {
+  string hash = 1;
+  string tempPathPrefix = 2;
+  string filename = 3;
+}
+message VerifyResp {
+  //  repeated string filenames = 1;
+  string hash = 1;
+  repeated int64 indexes = 2;
+}
+
+//压缩
+// 验证文件是否已上传
+message CompressionReq {
+  string hash = 1;
+  string filename = 2;
+
+}
+message CompressionResp {
+  //  repeated string filenames = 1;
+  bool success = 1;
+}
+
+// service
+service fileservice {
+  rpc uploadChunk(UploadChunkReq) returns (UploadChunkResp);
+  rpc verify(VerifyReq) returns (VerifyResp);
+  rpc mergeChunk(MergeChunkReq) returns (MergeChunkResp);
+  rpc preview(PreviewReq) returns(PreviewResp);
+  rpc Put(putRequest) returns(putResponse);
+  rpc Get(getRequest) returns(getResponse);
+  rpc copyFile(CopyFileReq) returns(CopyFileResp);
+  rpc compression(CompressionReq) returns(CompressionResp);
+}

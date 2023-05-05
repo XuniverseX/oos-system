@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package data;
+option go_package="./pb";
+
+message putRequest {
+  bytes files = 1;
+  string name = 2;
+  string hash = 3;
+  string type = 4;
+  int64  size = 5;
+  int32  index = 6;
+  int32 totalBlock = 7;
+}
+
+message putResponse {
+  string state = 1;
+  string name = 2;
+  string hash = 3;
+  string type = 4;
+  int64  size = 5;
+  string path = 6;
+}
+
+message getRequest {
+  int32  index = 1;
+  string name = 2;
+  string hash = 3;
+}
+
+message getResponse{
+  bytes data = 1;
+}
+
+service Data {
+  rpc Put(putRequest) returns(putResponse);
+  rpc Get(getRequest) returns(getResponse);
+}

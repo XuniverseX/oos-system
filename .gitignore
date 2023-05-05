@@ -1,0 +1,21 @@
+# idea
+.idea
+.idea/
+*.iml
+.DS_Store
+**/.DS_Store
+
+#deploy dataServer
+
+data/*
+!data/.gitkeep
+
+# gitlab ci
+.cache
+
+#vscode
+.vscode
+.vscode/
+
+go.mod
+go.sum

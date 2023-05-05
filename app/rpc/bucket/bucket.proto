@@ -1,0 +1,166 @@
+syntax = "proto3";
+
+package bucket;
+
+option go_package = "./bucket";
+
+
+// model
+// 模糊查询桶
+message GetBucketByBucketNameReq {
+  string bucketName = 1;
+  string username = 2;
+}
+// 通过用户名获取桶信息
+message GetAllBucketReq {
+  string username = 1;
+}
+message GetMyBucketReq {
+  string username = 1;
+}
+message GetManageBucketReq {
+  string username = 1;
+}
+// 桶详细信息
+message BucketInfoResp {
+  int64 id = 1;
+  string username = 2;
+  string bucketName = 3;
+  string capacityCur = 4;
+  int64 objectNum = 5;
+  int64 permission = 6;
+  int64 userPermission = 7;
+  string create_time = 8;
+  string update_time = 9;
+}
+// 返回桶信息响应体
+message AllBucketResp {
+  repeated BucketInfoResp bucketList = 1;
+}
+
+// 查询用户拥有桶数量
+message CountBucketReq {
+  string username = 1;
+}
+
+// 返回用户拥有桶数量
+message CountBucketResp {
+  int64 bucketNum = 1;
+}
+
+// 创建桶桶详细信息
+message CreateBucketInfoReq{
+  string username = 1;
+  string bucketName = 2;
+  float capacityCur = 3;
+  int64 objectNum = 4;
+  int64 permission = 5;
+}
+// 成功操作统一返回
+message SucResp {
+  bool success = 1;
+}
+
+// 写入hashcode
+message HashCodeReq {
+  string hashcode = 1;
+}
+
+// 删除桶
+message DelBucketReq {
+  string bucketName = 1;
+}
+
+// 权限统一请求体
+message PolicyReq {
+  string username = 1;
+  string bucketName = 2;
+  string permission = 3; // 0 读写权限 1 读权限 2 写权限 3 表示桶的拥有者
+}
+
+message UpdatePolicyReq {
+  string username = 1;
+  string bucketName = 2;
+  string oldPermission = 3;
+  string newPermission = 4;
+}
+
+message GetPolicyReq {
+  string username = 1;
+  string bucketName = 2;
+}
+
+message GetPolicyResp {
+  int64 userPermission = 1; // 0 读写权限 1 读权限 2 写权限 3 表示桶的拥有者
+}
+
+message DelBucketAllPolicyReq {
+  string bucketName = 1;
+}
+
+// 更新桶信息
+message UpdateBucketSizeAndNumReq {
+  string bucketName = 1;
+  int64 size = 2;
+  int64 objectNum = 3;
+}
+
+// 删除桶里全部哈希
+message DelBucketAllHashReq {
+  string bucketName = 1;
+}
+
+// 桶里全部拥有权限的用户（桶里全部协作者）
+message UserPolicyInfo {
+  string username = 1;
+  string bucketName = 2;
+  string userPermission = 3;
+}
+
+message GetAllBucketPolicyReq {
+  string bucketName = 1;
+}
+
+message GetAllBucketPolicyResp {
+  repeated UserPolicyInfo policyList = 1;
+}
+
+// 删除该用户所有权限 在注销用户时调用
+message DelUserAllPolicy {
+  string userName = 1;
+}
+
+// 更新桶访问策略
+message UpdateBucketPermission {
+  string bucketName = 1;
+  string permission = 2;
+}
+
+
+// service
+service bucket {
+  rpc delBucket(DelBucketReq) returns(SucResp); // 删除彤请求
+//  rpc getAllBucket(GetAllBucketReq) returns(AllBucketResp); // 获取用户所有桶对象
+  rpc getMyBucket(GetMyBucketReq) returns(AllBucketResp); // 获取我创建的桶
+  rpc getManageBucket(GetManageBucketReq) returns(AllBucketResp); // 获取我管理的桶
+//  rpc getBucketByBucketName(GetBucketByBucketNameReq) returns(AllBucketResp); // 根据桶名模糊查询桶列表返回
+  rpc getMyBucketByBucketName(GetBucketByBucketNameReq) returns(AllBucketResp); // 根据桶名模糊查询我创建的桶列表返回
+  rpc getManageBucketByBucketName(GetBucketByBucketNameReq) returns(AllBucketResp); // 根据桶名模糊查询我管理的桶列表返回
+  rpc countBucket(CountBucketReq) returns(CountBucketResp); // 查询用户拥有桶数量
+  rpc createBucketInfo(CreateBucketInfoReq) returns(SucResp); // 创建桶数据库写入桶信息
+  rpc updateBucketSizeAndNumInfo(UpdateBucketSizeAndNumReq) returns(SucResp); // 更新桶信息
+  rpc updateBucketPermission(UpdateBucketPermission) returns(SucResp); // 更新桶权限信息
+  // 秒传逻辑
+  rpc addHashCode(HashCodeReq) returns(SucResp); // 写入hashCode
+  rpc delHashCode(HashCodeReq) returns(SucResp); // 删除hashCode
+  rpc hasHashCode(HashCodeReq) returns(SucResp); // 查询是否存在hashCode
+  rpc addPolicy(PolicyReq) returns(SucResp); // 添加权限   // 把usercenter中的casbin挪到这里 使用一个casbin启动器 不然会出错 他每个启动器里面有一套缓存机制
+  rpc removePolicy(PolicyReq) returns(SucResp); // 删除权限
+  rpc updatePolicy(UpdatePolicyReq) returns(SucResp); // 更新权限
+  rpc verifyPermission(PolicyReq) returns(SucResp); // 校验用户是否存在权限
+  rpc getPolicy(GetPolicyReq) returns(GetPolicyResp); // 获取用户桶权限
+  rpc getAllBucketPolicy(GetAllBucketPolicyReq) returns(GetAllBucketPolicyResp); // 获取桶里全部协作者
+  rpc delBucketAllPolicy(DelBucketAllPolicyReq) returns(SucResp); // 删除该桶所有权限 删除桶时调用
+  rpc delUserAllPolicy(DelUserAllPolicy) returns(SucResp); // 删除该用户所有权限 在注销用户时调用
+  rpc delBucketAllHash(DelBucketAllHashReq) returns(SucResp); // 删除该桶全部哈希
+}

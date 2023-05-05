@@ -1,0 +1,149 @@
+syntax = "v1"
+
+info(
+	desc: "分片上传与断点续传"
+	author: "xuni"
+	email: "xuniverse617@gmail.com"
+)
+
+type (
+	UploadChunkReq {
+//		Hash  string `form:"hash"`
+//		Index string `form:"index"`
+		chunkNumber int64 `form:"chunkNumber"`
+		chunkSize int64  `form:"chunkSize"`
+		currentChunkSize int64 `form:"currentChunkSize"`
+		totalSize int64 `form:"totalSize"`
+		identifier string  `form:"identifier"`
+		filename string  `form:"filename"`
+		relativePath string  `form:"relativePath"`
+		totalChunks int64  `form:"totalChunks"`
+		bucketName string `form:"bucketName"`
+		filePath string `form:"filePath"`
+	}
+	UploadChunkResp {
+		Uploaded []int64 `json:"uploaded"`
+		Success bool `json:"success"`
+		NeedMerge bool `json:"needMerge"`
+		SkipUpload bool `json:"skipUpload"`
+	}
+)
+
+type (
+	// 秒传逻辑req
+	UploadChunkGetReq {
+		chunkNumber int64 `form:"chunkNumber"`
+		chunkSize int64  `form:"chunkSize"`
+		currentChunkSize int64 `form:"currentChunkSize"`
+		totalSize int64 `form:"totalSize"`
+		identifier string  `form:"identifier"`
+		filename string  `form:"filename"`
+		relativePath string  `form:"relativePath"`
+		totalChunks int64  `form:"totalChunks"`
+		bucketName string `form:"bucketName"`
+		filePath string `form:"filePath"`
+	}
+)
+
+type (
+	MergeChunkReq {
+		HashCode string `json:"hashCode"`
+		FileName string `json:"fileName"`
+		BucketName string `json:"bucketName"`
+		FilePath string `json:"filePath"`
+		ChunkSize string `json:"chunkSize"`
+		TotalSize int64 `json:"totalSize"`
+	}
+	MergeChuckResp {
+		Success bool `json:"success"`
+	}
+)
+
+type (
+	UploadNoChunkReq {
+		 bucketName	string  `form:"hash"`
+		 objectName  string `form:"hash"`
+		 isDir	bool  `form:"hash"`
+		 createUser	string  `form:"hash"`
+		 checkCode	string  `form:"hash"`
+		 totalSize	int64 `form:"hash"`
+		 Hash string `form:"hash"`
+	}
+	UploadNoChunkResp {
+		Success bool `json:"success"`
+	}
+)
+
+type (
+	PreviewReq {
+		path	string  `form:"path"`
+	}
+)
+
+type (
+	DownloadReq {
+		bucketName	string  `form:"bucketName"`
+		path string `form:"path"`
+		objectName  string `form:"objectName"`
+	}
+)
+
+type (
+	DownloadUrlReq {
+		bucketName	string  `json:"bucketName"`
+		path string `json:"path"`
+		objectName  string `json:"objectName"`
+	}
+	DownloadUrlResp  {
+		success bool `json:"success"`
+		url  string `json:"objectName"`
+	}
+)
+
+@server(
+	group: file
+	prefix: api/v1
+)
+service gateway{
+	@doc "获取下载链接"
+	@handler downloadUrl
+	get /download/url (DownloadUrlReq) returns(DownloadUrlResp)
+
+}
+
+
+@server(
+	group: file
+)
+service gateway{
+	@doc "预览/下载"
+	@handler preview
+	get /zhiyi-obj (PreviewReq)
+
+	@doc "预览/下载-new"
+	@handler download
+	get /zhiyi-cloud (DownloadReq)
+}
+
+@server(
+	jwt: JwtAuth
+	prefix: api/v1
+	group: file
+)
+service gateway {
+	@doc "分片上传"
+	@handler uploadChunk
+	post /chunk/upload (UploadChunkReq) returns (UploadChunkResp)
+
+	@doc "秒传逻辑"
+	@handler uploadChunkGet
+	get /chunk/upload (UploadChunkGetReq) returns (UploadChunkResp)
+
+	@doc "不分片上传"
+	@handler uploadNoChunk
+	post /nochunk/upload (UploadNoChunkReq) returns (UploadNoChunkResp)
+
+	@doc "合并切片"
+	@handler mergeChunk
+	post /chunk/merge (MergeChunkReq) returns (UploadNoChunkResp)
+}

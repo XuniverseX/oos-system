@@ -1,0 +1,10 @@
+import "usercenter/usercenter.api"
+import "bucket/bucket.api"
+import "fileservice/fileservice.api"
+
+info(
+	title: "gateway"
+	desc: "gateway"
+	author: ""
+	email: ""
+)

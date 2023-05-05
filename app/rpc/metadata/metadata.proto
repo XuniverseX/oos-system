@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package metadata;
+
+option go_package = "./pb";
+
+message GetReq{
+  string bucketName = 1;
+  string objectName = 2;
+}
+
+message GetResp{
+  string objectId = 1;
+}
+
+message CreateReq {
+  string username = 1;
+  string bucketName = 2;
+  bool version = 3;
+}
+
+message CreateResp {
+  bool created = 1;
+}
+
+message PutReq{
+  string bucketName = 1;
+  string objectName = 2;
+  bool isDir = 3;
+  string createUser = 4;
+  string checkCode = 5;
+  int64 size = 6;
+}
+
+message PutResp{
+  string objectId = 1;
+  bool alreadyUpload = 2;
+  repeated string replicationId = 3;
+  string preHash = 4;
+}
+
+message DeleteReq{
+  string objectName = 1;
+  string bucketName = 2;
+  bool isDir = 3;
+}
+
+message DeleteResp{
+  bool deleted = 1;
+}
+
+message BucketInfoReq{
+  string bucketName = 1;
+  string objectName = 2;
+}
+
+message ObjectInfo{
+  string name = 1;
+  string objectName = 2;
+  string createTime = 3;
+  int64 size = 4;
+  bool isDir = 6;
+  string hash = 7;
+}
+
+message BucketInfoResp{
+  repeated ObjectInfo objectInfo = 1;
+}
+
+service metadataService {
+  rpc get(GetReq) returns (GetResp);
+  rpc create(CreateReq) returns (CreateResp);
+  rpc put(PutReq) returns (PutResp);
+  rpc delete(DeleteReq) returns (DeleteResp);
+  rpc bucketInfo(BucketInfoReq) returns (BucketInfoResp);
+}

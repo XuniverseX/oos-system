@@ -1,0 +1,19 @@
+Name: bucket.rpc
+ListenOn: 0.0.0.0:9002
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: bucket.rpc
+JwtAuth:
+  AccessSecret: $abraham$
+  AccessExpire: 259200
+Mysql:
+  DataSource: root:12345678@tcp(127.0.0.1:3306)/oos-system?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+CacheRedis:
+  - Host: 127.0.0.1:6379
+    Pass: '123456'
+    Type: node
+Log:
+  Encoding: plain
+  Stat: false
+  Level: error

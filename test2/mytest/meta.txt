@@ -1,0 +1,1 @@
+{"object_name":"mytest","object_id":"5009f3a4-b346-4574-a9cb-b9ba1cae97e6","create_time":"2023-03-13 22:11:49","create_user":"pandak","is_dir":true,"chek_code":"sd12sd1s21","replication_addr":null,"size":0}

@@ -1,0 +1,19 @@
+Name: metadata.rpc
+ListenOn: 0.0.0.0:9003
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: metadata.rpc
+
+#RedisConf:
+#  Host: 127.0.0.1
+#  Type: node
+#  Pass:
+BaseLocation: /Users/xuni/oosTest
+ReplicationLocation: /Users/xuni/oosTest/sys/tmp/replication
+#BaseLocation: F:/outSourceContest/oosTest
+#ReplicationLocation: F:/outSourceContest/oosTest/sys/tmp/replication
+Log:
+  Encoding: plain
+  Stat: false
+  Level: error

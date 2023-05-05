@@ -1,0 +1,211 @@
+info(
+    desc: "桶管理服务"
+    author: "abraham"
+    email: "abraham2002@163.com"
+)
+
+
+type (
+    // 桶详细信息
+    BucketInfo {
+        Id int64 `json:"id"`
+        Username string `json:"username"`
+        BucketName string `json:"bucketName"`
+        CapacityCur string `json:"capacityCur"`
+        ObjectNum int64 `json:"objectNum"`
+        Premission int64 `json:"premission"`
+        UserPremission int64 `json:"userPremission"`
+        CreateTime string `json:"createTime"`
+        UpdateTime string `json:"updateTime"`
+    }
+    // 根据token获取用户名就行
+    GetAllBucketReq{}
+
+    // 模糊查询用户拥有权限的桶 只需要传入模糊搜索的桶名就行
+    GetBucketByBucketNameReq {
+        BucketName string `form:"bucketName"`
+    }
+
+    // 获取桶列表信息返回结构体
+    GetAllBucketResq {
+        List []BucketInfo `json:"list"`
+    }
+)
+
+type (
+    // 创建桶请求体
+    CreateBucketReq {
+        BucketName string `json:"bucketName"`
+        Version bool `json:"version"`
+        Permission int64 `json:"permission"` //桶权限 0 公共 | 1 私有
+    }
+    // 创建桶响应题
+    CreateBucketResq {}
+)
+
+type (
+    ObjectInfo {
+        Name string `json:"name"`
+        ObjectName string `json:"objectName"`
+        CreateTime string `json:"createTime"`
+        Size int64 `json:"size"`
+        IsDir bool `json:"isDir"`
+        HashCode string `json:"hashCode"`
+    }
+
+    // 文件列表请求体
+    FilePathReq {
+        BucketName string `form:"bucketName"`
+        Path string `form:"path"`
+    }
+
+    // 文件列表返回
+    FilePathResp {
+        BucketPathList []ObjectInfo `json:"bucketPathList"`
+    }
+)
+
+type (
+    DeleteFileReq {
+        BucketName string `json:"bucketName"`
+        Path string `json:"path"`
+        IsDir bool `json:"isDir"`
+        HashCode string `json:"hashCode"`
+        Size int64 `json:"size"`
+    }
+    DeleteFileResp {}
+)
+
+type (
+    // 创建文件夹
+    CreateFileFolderReq {
+        BucketName string `json:"bucketName"`
+        FileFloderPath string `json:"fileFloderPath"`
+    }
+    CreateFileFolderResp {}
+)
+
+type (
+    // 给桶添加协作者
+    AddPolicyReq {
+        BucketName string `json:"bucketName"`
+        UserName string `json:"userName"`
+        userPermission string `json:"userPermission"`
+    }
+    AddPolicyResp {}
+)
+
+type (
+    // 获取桶全部协作者
+    PolicyInfo {
+        UserName string `json:"userName"`
+        BucketName string `json:"bucketName"`
+        UserPermission string `json:"userPermission"`
+    }
+    GetAllPolicyReq {
+        BucketName string `form:"bucketName"`
+    }
+    GetAllPolicyResp {
+        List []PolicyInfo `json:"list"`
+    }
+)
+
+type (
+    // 更新桶协作者权限
+    UpdatePolicyReq {
+        UserName string `json:"userName"`
+        BucketName string `json:"bucketName"`
+        OldPermission string `json:"oldPermission"`
+        NewPermission string `json:"newPermission"`
+    }
+    UpdatePolicyResp {}
+)
+
+type (
+    // 删除桶权限
+    RemovePolicyReq {
+        UserName string `json:"userName"`
+        BucketName string `json:"bucketName"`
+        UserPermission string `json:"userPermission"`
+    }
+    RemovePolicyResp {}
+)
+
+type (
+    UpdateBucketPermissionReq {
+        BucketName string `json:"bucketName"`
+        Permission string `json:"permission"`
+    }
+    UpdateBucketPermissionResp {}
+)
+
+
+//============================> bucket v1 <============================
+
+//need login
+@server(
+    prefix: api/v1
+    group: bucket
+    jwt: JwtAuth
+)
+service gateway {
+//    @doc "获取用户所有桶"
+//    @handler getAllBucket
+//    get /bucket/getAllBucket (GetAllBucketReq) returns (GetAllBucketResq)
+
+    @doc "获取用户自己创建的桶"
+    @handler getMyBucket
+    get /bucket/getMyBucket (GetAllBucketReq) returns (GetAllBucketResq)
+
+    @doc "获取用户管理的桶"
+    @handler getManageBucket
+    get /bucket/getManageBucket (GetAllBucketReq) returns (GetAllBucketResq)
+
+//    @doc "模糊查询用户拥有权限的桶"
+//    @handler getBucketByBucketName
+//    get /bucket/getBucketByBucketName (GetBucketByBucketNameReq) returns (GetAllBucketResq)
+
+    @doc "模糊查询用户拥有的桶"
+    @handler getMyBucketByBucketName
+    get /bucket/getMyBucketByBucketName (GetBucketByBucketNameReq) returns (GetAllBucketResq)
+
+    @doc "模糊查询用户管理的桶"
+    @handler getManageBucketByBucketName
+    get /bucket/getManageBucketByBucketName (GetBucketByBucketNameReq) returns (GetAllBucketResq)
+
+    @doc "创建桶"
+    @handler createBucket
+    post /bucket/createBucket (CreateBucketReq) returns (CreateBucketResq)
+
+    @doc "获取文件列表"
+    @handler getFilePath
+    get /bucket/getFilePath (FilePathReq) returns (FilePathResp)
+
+    @doc "删除桶里文件/文件夹 删除桶"
+    @handler deleteFile
+    post /bucket/deleteFile (DeleteFileReq) returns (DeleteFileResp)
+
+    @doc "创建文件夹"
+    @handler createFileFolder
+    post /bucket/createFileFolder (CreateFileFolderReq) returns (CreateFileFolderResp)
+
+    @doc "桶添加协作者"
+    @handler addPolicy
+    post /bucket/addPolicy (AddPolicyReq) returns (AddPolicyResp)
+
+    @doc "获取桶所有协作者"
+    @handler getAllPolicy
+    get /bucket/getAllPolicy (GetAllPolicyReq) returns (GetAllPolicyResp)
+
+    @doc "修改桶协作者权限"
+    @handler updateUserPolicy
+    post /bucket/updateUserPolicy (UpdatePolicyReq) returns (UpdatePolicyResp)
+
+    @doc "删除桶协作者权限"
+    @handler removeUserPolicy
+    post /bucket/removeUserPolicy (RemovePolicyReq) returns (RemovePolicyResp)
+
+    @doc "更新桶信息"
+    @handler updateBucketPermission
+    post /bucket/updateBucket (UpdateBucketPermissionReq) returns (UpdateBucketPermissionResp)
+}

@@ -1,0 +1,14 @@
+Name: fileservice.rpc
+ListenOn: 0.0.0.0:9004
+Etcd:
+  Hosts:
+    - 127.0.0.1:2379
+  Key: fileservice.rpc
+#TempPath:  F:/outSourceContest/oosTest/temp
+TempPath:  /Users/xuni/temp
+Timeout: 60000
+Log:
+  Encoding: plain
+  Stat: false
+  Level: error
+MaxThread: 500

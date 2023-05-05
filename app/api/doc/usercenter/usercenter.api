@@ -1,0 +1,92 @@
+info(
+	desc: "用户服务"
+	author: "abraham"
+	email: "abraham2002@163.com"
+)
+
+type (
+	GetCaptchaReq {
+		Id string `form:"id,optional"`
+	}
+	GetCaptchaResp {
+		Id          string `json:"id"`
+		ImgbaseCode string `json:"imgbaseCode"`
+	}
+)
+
+type (
+	RegisterReq {
+		Username   string `json:"username"`
+		Password   string `json:"password"`
+		UniqueCode string `json:"uniqueCode"`
+		Captcha    string `json:"captcha"`
+	}
+	RegisterResp {}
+)
+
+type (
+	LoginReq {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+	LoginResp {
+		AccessToken  string `json:"accessToken"`
+		AccessExpire int64  `json:"accessExpire"`
+		RefreshAfter int64  `json:"refreshAfter"`
+	}
+)
+
+type (
+	UserInfoReq  struct{}
+	UserInfoResp {
+		Username string `json:"username"`
+	}
+)
+
+type (
+	DelReq  struct{}
+	DelResp struct{}
+)
+
+//no need login
+@server(
+	prefix: api/v1
+	group: user
+)
+service gateway {
+	
+	@doc "获取验证码 每次请求验证码会返回一个id，前端需要在注册时携带这个id"
+	@handler getcaptcha
+	get /user/getcaptcha (GetCaptchaReq) returns (GetCaptchaResp)
+	
+	@doc "注册 需要携带之前生成code（uinqueCode）"
+	@handler register
+	post /user/register (RegisterReq) returns (RegisterResp)
+	
+	@doc "登录"
+	@handler login
+	post /user/login (LoginReq) returns (LoginResp)
+}
+
+//============================> usercenter v1 <============================
+
+//need login
+@server(
+	prefix: api/v1
+	group: user
+	jwt: JwtAuth
+)
+service gateway {
+	
+	@doc "获取用户信息"
+	@handler getuserInfo
+	get /user/getuserInfo (UserInfoReq) returns (UserInfoResp)
+	
+	@doc "修改密码"
+	@handler updatePassword
+	post /user/update (LoginReq) returns (RegisterResp)
+	
+	@doc "用户注销"
+	@handler deleteBySelf
+	post /user/del (DelReq) returns (DelResp)
+}

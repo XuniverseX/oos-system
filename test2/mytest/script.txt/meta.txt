@@ -1,0 +1,1 @@
+{"object_name":"mytest/script.txt","object_id":"335a741b-f9c3-4e98-85c4-4bad92a1f7a9","create_time":"2023-03-13 22:12:06","create_user":"pandak","is_dir":false,"chek_code":"sd12sd1s21","replication_addr":["af431dd2-a241-4adb-87c5-3fceb7be66f8","194fcb68-8475-442f-8b05-72b0988c3449","a59a06fb-38b5-4d7c-b0cd-b06748cc701b"],"size":0}
